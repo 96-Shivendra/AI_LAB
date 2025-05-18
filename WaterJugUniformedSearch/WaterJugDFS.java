@@ -1,7 +1,33 @@
 import java.util.*;
 
-public class WaterJugDFS {
+class WaterJugState {
+    int jug4, jug3;
 
+    WaterJugState(int jug4, int jug3) {
+        this.jug4 = jug4;
+        this.jug3 = jug3;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WaterJugState)) return false;
+        WaterJugState state = (WaterJugState) o;
+        return jug4 == state.jug4 && jug3 == state.jug3;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(jug4, jug3);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + jug4 + ", " + jug3 + ")";
+    }
+}
+
+public class WaterJugDFS {
     public static void main(String[] args) {
         int cap4 = 4, cap3 = 3, goal = 2;
         WaterJugState start = new WaterJugState(0, 0);
@@ -17,14 +43,13 @@ public class WaterJugDFS {
             WaterJugState current = stack.pop();
 
             if (current.jug4 == goal) {
-                // Print path from start to current
                 List<WaterJugState> path = new ArrayList<>();
                 while (current != null) {
                     path.add(current);
                     current = parent.get(current);
                 }
                 Collections.reverse(path);
-                System.out.println("Solution path:");
+                System.out.println("Solution path (DFS):");
                 for (WaterJugState state : path) {
                     System.out.println(state);
                 }
@@ -48,23 +73,17 @@ public class WaterJugDFS {
         int a = current.jug4;
         int b = current.jug3;
 
-        // Fill jugs
         states.add(new WaterJugState(cap4, b));
         states.add(new WaterJugState(a, cap3));
-
-        // Empty jugs
         states.add(new WaterJugState(0, b));
         states.add(new WaterJugState(a, 0));
 
-        // Pour from 4 to 3
         int pour4to3 = Math.min(a, cap3 - b);
         states.add(new WaterJugState(a - pour4to3, b + pour4to3));
 
-        // Pour from 3 to 4
         int pour3to4 = Math.min(b, cap4 - a);
         states.add(new WaterJugState(a + pour3to4, b - pour3to4));
 
         return states;
     }
 }
-
